@@ -42,7 +42,7 @@ let VERIFY_TOKEN = process.env.VERIFY_TOKEN || "<provide-your-own-secure-token>"
  *  Direqt Console | <Account Name> | "API Keys"
  */
 const DIREQT_PLAYGROUND_API_KEY = "5rp26o1WB5IBQ6gVTg"; // acceptable for use in testing
-const DIREQT_API_KEY = process.env.DIREQT_API_KEY || DIREQT_PLAYGROUND_API_KEY
+const DIREQT_API_KEY = process.env.DIREQT_API_KEY || DIREQT_PLAYGROUND_API_KEY;
 
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
@@ -105,10 +105,18 @@ function handleMessage(sender_psid, received_message) {
     };
     callSendAPI(sender_psid, response);
 
-    if (received_message.text.includes("offer")) {
-        fetchDireqt(sender_psid, "moment-offer");
-    } else if (received_message.text.includes("goodbye")) {
-        fetchDireqt(sender_psid, "moment-goodbye");
+    // If the sender specified one of the Moments pre-configured in the
+    // Direqt Playground account, fetch content from Direqt and render it.
+    const exampleMoments = [
+        "text",         // => "fbm-text"
+        "rich-card",    // => "fbm-rich-card"
+        "media"         // => "fbm-media"
+    ];
+
+    // e.g., "Rich card. " => "rich-card"
+    const m = received_message.text.toLowerCase().replace(/\W/g, "-");
+    if (exampleMoments.some(moment => moment === m)) {
+        fetchDireqt(sender_psid, "fbm-" + m);
     }
 }
 
@@ -155,10 +163,10 @@ function fetchDireqt(sender_psid, moment) {
             if (body && body.payload) {
                 callSendAPI(sender_psid, JSON.parse(body.payload));
             } else {
-                console.log("Direqt fetch was empty.")
+                console.log("Direqt fetch for Moment '" + moment + "' was empty.")
             }
         } else {
-            console.error("Direqt fetch request failed:" + err)
+            console.error("Direqt fetch for Moment '" + moment + "' failed:" + err)
         }
     });
 }
