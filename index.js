@@ -44,7 +44,7 @@ let VERIFY_TOKEN = process.env.VERIFY_TOKEN || "<provide-your-own-secure-token>"
 const DIREQT_PLAYGROUND_API_KEY = "5rp26o1WB5IBQ6gVTg"; // acceptable for use in testing
 const DIREQT_API_KEY = process.env.DIREQT_API_KEY || DIREQT_PLAYGROUND_API_KEY;
 
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+app.listen(process.env.PORT || 1337, () => console.log('Direqt example webhook is listening'));
 
 /**
  * Endpoint invoked by FB Messenger to verify our webhook.

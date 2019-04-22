@@ -40,13 +40,16 @@ Note the https address listed for "Forwarding" in the ngrok output. It will look
 
 Once installed, you visit the Facebook Page associated with the Messenger bot, and tap the "Message" button. Type a message into the Messenger interface, and the bot should respond with a simple echo.
 
-The example has some keywords ("hello", "goodbye") that are mapped to Direqt moments, so by typing these in your message, you will receive content served from Direqt.
+The example has some keywords ("text", "rich card", "media") that are mapped to Direqt moments, so by typing these in your message, you will receive content served from Direqt.
   
    
 ### Using an alternate Direqt account
 
 This example is shipped with a Direqt API key that refers to a "playground" account that has been preconfigured with components and other information necessary to test interactions. If you'd rather use your own Direqt account, change the DIREQT_API_KEY constant in `index.js` to refer to your own API key, which can be obtained from the "API Keys" option in the Direqt Console (<https://console.direqt.io>). 
 
+### Using your own bot?
+
+If you just want to see examples of calling Direqt and getting back a response, take a peek at the `fetchDireqt` function in the example. It's basically a single HTTPS request to Direqt, with the response being sent to Facebook's APIs.
 
 ### Documentation
 
