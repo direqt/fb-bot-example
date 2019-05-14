@@ -40,9 +40,16 @@ let VERIFY_TOKEN = process.env.VERIFY_TOKEN || "<provide-your-own-secure-token>"
  * (https://console.direqt.io) at:
  *
  *  Direqt Console | <Account Name> | "API Keys"
+ *
+ *  Note that by default, Direqt's /fetch endpoint does not require authentication
+ *  and so you should leave DIREQT_API_SECRET empty unless you have a custom
+ *  configuration that requires it.
  */
 const DIREQT_PLAYGROUND_API_KEY = "5rp26o1WB5IBQ6gVTg"; // acceptable for use in testing
 const DIREQT_API_KEY = process.env.DIREQT_API_KEY || DIREQT_PLAYGROUND_API_KEY;
+const DIREQT_API_SECRET = process.env.DIREQT_API_SECRET || null;
+
+const DIREQT_API_ROOT = process.env.DIREQT_API_ROOT || "https://api.direqt.io";
 
 app.listen(process.env.PORT || 1337, () => console.log('Direqt example webhook is listening'));
 
@@ -153,20 +160,30 @@ function fetchDireqt(sender_psid, moment) {
         }`
     };
 
+    // HTTP authentication is only required in some custom configurations, and
+    // should normally be omitted.
+    const auth = DIREQT_API_SECRET && {
+        "user": DIREQT_API_KEY,
+        "pass": DIREQT_API_SECRET,
+    };
+
     request({
-        "uri": "https://api.direqt.io/fetch",
+        "uri": DIREQT_API_ROOT + "/fetch",
         "qs": { "key": DIREQT_API_KEY },
         "method": "POST",
-        "json": request_body
+        "json": request_body,
+        ...{auth},
     }, (err, res, body) => {
-        if (!err) {
-            if (body && body.payload) {
-                callSendAPI(sender_psid, JSON.parse(body.payload));
-            } else {
-                console.log("Direqt fetch for Moment '" + moment + "' was empty.")
-            }
+        if (err) {
+            console.error("Direqt fetch for Moment '" + moment + "' failed: " + err);
+        } else if (res && res.statusCode !== 200 && res.statusCode !== 204) {
+            console.error("Direqt fetch for Moment '" + moment + "' failed: "
+                + res.statusCode + " " + JSON.stringify(res.body));
+        } else if (body && body.payload) {
+            console.log("Direqt fetch for Moment '" + moment + "' received payload.")
+            callSendAPI(sender_psid, JSON.parse(body.payload));
         } else {
-            console.error("Direqt fetch for Moment '" + moment + "' failed:" + err)
+            console.log("Direqt fetch for Moment '" + moment + "' was empty.")
         }
     });
 }
