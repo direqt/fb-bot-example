@@ -51,6 +51,8 @@ const DIREQT_API_SECRET = process.env.DIREQT_API_SECRET || null;
 
 const DIREQT_API_ROOT = process.env.DIREQT_API_ROOT || "https://api.direqt.io";
 
+const FACEBOOK_API_ROOT = process.env.FACEBOOK_API_ROOT || "https://graph.facebook.com/v2.6/me/messages";
+
 app.listen(process.env.PORT || 1337, () => console.log('Direqt example webhook is listening'));
 
 /**
@@ -136,7 +138,7 @@ function callSendAPI(sender_psid, response) {
     };
 
     request({
-        "uri": "https://graph.facebook.com/v2.6/me/messages",
+        "uri": FACEBOOK_API_ROOT,
         "qs": { "access_token": PAGE_ACCESS_TOKEN },
         "method": "POST",
         "json": request_body
